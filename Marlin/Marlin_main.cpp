@@ -2093,6 +2093,9 @@ void clean_up_after_endstop_or_probe_move() {
       }
 
       bltouch_command(deploy ? BLTOUCH_DEPLOY : BLTOUCH_STOW);
+      if (deploy) {
+        bltouch_command(BLTOUCH_SW_MODE);
+      }
 
       #if ENABLED(DEBUG_LEVELING_FEATURE)
         if (DEBUGGING(LEVELING)) {
@@ -4251,6 +4254,11 @@ inline void gcode_G28(const bool always_home_all) {
 
   #if ENABLED(BLTOUCH)
     // Make sure any BLTouch error condition is cleared
+    #if ENABLED(BLTOUCH_FORCE_5V_MODE)
+      bltouch_command(BLTOUCH_5V_MODE);
+    #else
+      bltouch_command(BLTOUCH_OD_MODE);
+    #endif
     bltouch_command(BLTOUCH_RESET);
     set_bltouch_deployed(false);
   #endif
